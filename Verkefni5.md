@@ -37,27 +37,6 @@ Ef við erum að lesa næsta Node eða Node á undan þá getum við lesið þessa auðu hn
 Við notum ekki skipanir eins og perviousSibling, nextSibling, firstChild, lastChild
 
 6.    4%    Þú ert að smíða Quiz app. Búðu til tvær spurningar (frjálst efnisval). Útlit (css) er   algjört aukaatriði (frjáls útfærsla). 
-Búðu til html í html skránni fyrir Quiz appið, notaðu div fyrir spurningar og svarmöguleika). Ekki nota JavaScript til að búa til Quiz. Það á eingöngu að vera eitt id fyrir Quiz í html.  b) Teiknaðu upp DOM tré af vefappinu ásamt hnútum (e. nodes). Notaðu t.d. https://www.draw.io/  til að ná þessu fram. c) Búðu til tvo objecta sem innihalda spurningu, svarmöguleika og rétta svar.  
+Búðu til html í html skránni fyrir Quiz appið, notaðu div fyrir spurningar og svarmöguleika). Ekki nota JavaScript til að búa til Quiz. 
+Það á eingöngu að vera eitt id fyrir Quiz í html.
  
-d) Búðu til DOM elements (vísanir í html skrá) eftir þörfum. 
- 
-e) Notaðu Element.innerHTML aðferðina til að birta fyrstu spurningu ásamt svarmöguleikum í html skrá. Ath
-
-<html>
-<body>
-<di v id="page">
-<hl id="header">List</hl>
-<h2>Buy groceries</h2>
-<ul>
-<li id="one" class="hot"><em>fresh</em> figs</li>
-<li id="two" class="hot">pine nuts</l i>
-<l i id="three" class="hot">honey</l i>
-<l i id="four">balsamic vinegar</l i>
-</ ul>
-<script src="js/l i st. js "></scri pt>
-</ div>
-</ body>
-</ html>
-
-DOM-tree 194
-

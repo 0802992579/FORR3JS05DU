@@ -25,12 +25,45 @@ var q2 = new Q();
 q2.question = "Are you a human?";
 q2.answers = ['True', 'False'];
 q2.correct = 'True';
+var activeQuestion = q1;
 
 //question
 var quest = document.getElementById('question'); 
-quest.innerHTML = q1.getQuestion();
-
-
+quest.innerHTML = activeQuestion.getQuestion();
 //answers
 var answer = document.getElementById('answers'); 
-answer.innerHTML = q1.getListOfAnswers();
+answer.innerHTML = activeQuestion.getListOfAnswers();
+
+var list=document.getElementsByTagName('li');
+for (var i = 0; i < list.length; i++){
+   list[i].addEventListener('click',function(e){isRight(e)},false);
+}
+
+function updateQuestion(){
+   wait(7000);  
+   //question
+   var quest = document.getElementById('question');  
+   quest.innerHTML = activeQuestion.getQuestion();
+   //answers
+   var answer = document.getElementById('answers'); 
+   answer.innerHTML = activeQuestion.getListOfAnswers();
+
+   var list=document.getElementsByTagName('li');
+   for (var i = 0; i < list.length; i++){
+      list[i].addEventListener('click',function(e){isRight(e)},false);
+}
+
+
+}
+
+function isRight(e){
+  console.log(e.target.textContent);
+  if (e.target.textContent == activeQuestion.correct){
+  	e.target.setAttribute("class", "right");
+	activeQuestion = q2;
+	updateQuestion();
+  } 
+ else
+     {
+	e.target.setAttribute("class", "wrong");} 
+}

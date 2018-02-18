@@ -31,14 +31,11 @@ h4, h5, h6
   font: normal 120% arial, sans-serif;
   color: #663300;}
 
-h5, h6
-{ font: italic 95% arial, sans-serif;
-  padding: 0 0 15px 0;
-  color: #000;}
+.wrong
+{ color: red;}
 
-h6
-{ color: #362C20;}
-
+.right
+{ color: green;}
 
 ul
 { margin: 2px 0 22px 17px;}
@@ -53,4 +50,3 @@ ol
 
 ol li
 { margin: 0 0 11px 0;}
-

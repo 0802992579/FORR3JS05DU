@@ -40,7 +40,6 @@ for (var i = 0; i < list.length; i++){
 }
 
 function updateQuestion(){
-   wait(7000);  
    //question
    var quest = document.getElementById('question');  
    quest.innerHTML = activeQuestion.getQuestion();

@@ -14,7 +14,7 @@ function Q() {
     for (var i = 0; i < this.answers.length; i++){
      list = list + "<li>" + this.answers[i] + "</li>";
     }
-    list = "<ul>" + list + "</ul>";
+    list = "<ul id='list'>" + list + "</ul>";
     return list; 
   };
 
@@ -34,10 +34,8 @@ quest.innerHTML = activeQuestion.getQuestion();
 var answer = document.getElementById('answers'); 
 answer.innerHTML = activeQuestion.getListOfAnswers();
 
-var list=document.getElementsByTagName('li');
-for (var i = 0; i < list.length; i++){
-   list[i].addEventListener('click',function(e){isRight(e)},false);
-}
+document.getElementById('list').addEventListener('click',function(e){isRight(e)},false);
+
 
 function updateQuestion(){
    //question
@@ -48,21 +46,29 @@ function updateQuestion(){
    answer.innerHTML = activeQuestion.getListOfAnswers();
 
    var list=document.getElementsByTagName('li');
-   for (var i = 0; i < list.length; i++){
-      list[i].addEventListener('click',function(e){isRight(e)},false);
+   list.addEventListener('click',function(e){isRight(e)},false);
+   list.addEventListener('touchstart', function(e){
+    var touchlist = e.touches
+    for (var i=0; i<touchlist.length; i++){ // loop through all touch points currently in contact with surface
+        //do something with each Touch object (point)
+	isRight(e);
+    	}
+   },false)
 }
 
-
-}
 
 function isRight(e){
-  console.log(e.target.textContent);
-  if (e.target.textContent == activeQuestion.correct){
+  if (e.target && e.target.nodeName == "LI"){
+
+     if (e.target.textContent == activeQuestion.correct){
   	e.target.setAttribute("class", "right");
-	activeQuestion = q2;
-	updateQuestion();
-  } 
+	//activeQuestion = q2;
+	//updateQuestion();
+     }
  else
      {
-	e.target.setAttribute("class", "wrong");} 
+      e.target.setAttribute("class", "wrong");} 
+ }
 }
+
+                                                                                                                                                                                                                                                                                                                                                      

@@ -32,10 +32,13 @@ h4, h5, h6
   color: #663300;}
 
 .wrong
-{ color: red;}
+{ color: yellow;
+  background-color: red;}
 
 .right
-{ color: green;}
+{ color: green;
+  background-color: red;
+}
 
 ul
 { margin: 2px 0 22px 17px;}

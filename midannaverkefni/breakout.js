@@ -2,6 +2,7 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var rightPressed = false;
 var leftPressed = false;
+var bricks = [];   
 var brickRowCount = 10;
 var brickColumnCount = 6;
 var brickWidth = 75;
@@ -15,8 +16,9 @@ var lives = 3;
 //
 //MY ADDITIONS TO THE CODE
 //
-//level - which level you are on
-var level = 0; 
+//level - which level you are on and how many bricks to next level
+var level = 1; 
+var bricks_to_next_level = brickRowCount * brickColumnCount
 
 //array to create diffent colored rows
 var color = ["#0095DD","#800080","#FF0000","#FFA500","#FFFF00","#2E8B57"];
@@ -40,35 +42,98 @@ function Text (ctx_on) {
 
 //a Ball function so that there can be many balls
 function Ball () {
-      this.x = canvas.width/2;
-      this.y = canvas.height-30;
-      this.ballRadius = 10;
-      this.dx = 2;  //hvað boltinn hreyfist í hverjum ramma
-      this.dy = -2; //hvað boltinn hreyfist í hverjum ramma
-      this.color = "#000000";
-      this.draw = function() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "#000000";
-        ctx.fill();
-        ctx.closePath();
-    	};
+  this.x = canvas.width/2;     	//byrjunar x
+  this.y = canvas.height-30;	//byrjunar y
+  this.ballRadius = 10;		//stærð boltans
+  this.status = 1; 		//status 1 visible, status 0 invisible and not in the game
+  this.dx = 2;  //hvað boltinn hreyfist í hverjum ramma
+  this.dy = -2; //hvað boltinn hreyfist í hverjum ramma
+  this.color = "#000000";
+  this.restart = function() { //setja boltann inn aftur
+    if (this.status==1){
+  	this.x = canvas.width/2;     	//byrjunar x
+  	this.y = canvas.height-30;	//byrjunar y
+  	this.ballRadius = 10;		//stærð boltans
+    }
+  };
+  this.draw = function() { //teikna boltann
+    if (this.status==1){
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI*2);
+      ctx.fillStyle = "#000000";
+      ctx.fill();
+      ctx.closePath();
+    }
+  };
 }
 
 //a Paddle function so that there can be many balls
 function Paddle () {
-	this.Height = 10;
-	this.Width = 75;
-	this.X = (canvas.width-this.Width)/2;
-       	this.draw = function() {
-  		ctx.beginPath();
-  		ctx.rect(this.X, canvas.height-this.Height, this.Width, this.Height);
-  		ctx.fillStyle = "#000000";
-  		ctx.fill();
-  		ctx.closePath();
-    	};
+  this.Height = 10;   //hæð paddle
+  this.Width = 75;    //vídd paddle
+  this.X = (canvas.width-this.Width)/2;  //start staðsetning paddle
+  this.draw = function() { //teikna paddle
+    ctx.beginPath();
+    ctx.rect(this.X, canvas.height-this.Height, this.Width, this.Height);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+    ctx.closePath();
+    };
 }
 
+
+
+//a Screen function that handles bricks and different levels
+function Screen (level) {
+  this.init = function(level) { //init level
+    //level1 init
+    if (level == 1){
+	for(c=0; c<brickColumnCount; c++) {
+  	  bricks[c] = [];
+  	  for(r=0; r<brickRowCount; r++) {
+            bricks[c][r] = { x: 0, y: 0, status: 1 }; //status = 1 visible
+  	  }
+	}
+	bricks_to_next_level = brickRowCount * brickColumnCount //how many bricks to next level
+    }
+    //level 2 init
+    if (level == 2){
+        for(c=0; c<brickColumnCount; c++) {
+    	  bricks[c] = [];
+          for(r=0; r<brickRowCount; r++) {
+            if(c == 4 & r ==5){	
+              bricks[c][r] = { x: 0, y: 0, status: 0 }; //make space for ball
+            }
+            else{
+              bricks[c][r] = { x: 0, y: 0, status: 1 };
+            }
+          }
+        }
+        extra_ball.x = 520;
+	extra_ball.y = 160;
+	extra_ball.status = 1;
+	bricks_to_next_level = (brickRowCount * brickColumnCount) - 1 
+    }
+  };
+   
+  this.drawBricks = function() { //teikna bricks
+    for(c=0; c<brickColumnCount; c++) {
+      for(r=0; r<brickRowCount; r++) {
+        if(bricks[c][r].status == 1) {
+           var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
+           var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
+           bricks[c][r].x = brickX;
+           bricks[c][r].y = brickY;
+           ctx.beginPath();
+           ctx.rect(brickX, brickY, brickWidth, brickHeight);
+           ctx.fillStyle = color[c]; //"#0095DD";
+           ctx.fill();
+           ctx.closePath();
+         }
+      }
+    }
+  };
+}
 
 
 
@@ -79,16 +144,14 @@ var text = new Text(ctx);
 var ball = new Ball();
 var balls = [];
 balls.push(ball);
-
+//extra ball sometimes used
+var extra_ball = new Ball();
+extra_ball.status = 0; //inivisible and inactive
+balls.push(extra_ball);
 
 //create bricks
-var bricks = [];
-for(c=0; c<brickColumnCount; c++) {
-    bricks[c] = [];
-    for(r=0; r<brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0, status: 1 }; //status = 1 visible
-    }
-}
+var screen = new Screen(level);
+screen.init(level);
 
 //create a paddle
 var paddle = new Paddle();
@@ -134,12 +197,19 @@ function collisionDetection(ball_item) {
       var b = bricks[c][r];
         if(b.status == 1) {    
           if(ball_item.x > b.x && ball_item.x < b.x+brickWidth && ball_item.y > b.y && ball_item.y < b.y+brickHeight) {
-             ball_item.dy = -ball_item.dy;
-             b.status = 0;
-             score++;
-             if(score == brickRowCount*brickColumnCount) {
-                alert("YOU WIN, CONGRATS!");
-                document.location.reload();
+             ball_item.dy = -ball_item.dy;  //skipta um stefnu
+             b.status = 0;		    //remove brick in drawing	
+             score++;			    //add score
+             if(score == bricks_to_next_level) {
+                level++;
+                if (level == 3){
+                	alert("YOU WIN, CONGRATS!");
+                	document.location.reload();
+		}
+		else {
+			ball.restart();			
+			screen.init(level);
+		}
              }
           }
       }
@@ -147,61 +217,14 @@ function collisionDetection(ball_item) {
   }
 }
 
-    
-
-
-    function drawBricks() {
-	for(c=0; c<brickColumnCount; c++) {
-            for(r=0; r<brickRowCount; r++) {
-                if(bricks[c][r].status == 1) {
-                    var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
-                    var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
-                    bricks[c][r].x = brickX;
-                    bricks[c][r].y = brickY;
-                    ctx.beginPath();
-                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                    ctx.fillStyle = color[c]; //"#0095DD";
-                    ctx.fill();
-                    ctx.closePath();
-                }
-            }
-        }
-    }
-
-
-//start level
-level2();
-var ball1 = new Ball();
-ball1.x = 520;
-ball1.y = 160;
-//ball1.draw();
-balls.push(ball1);
-
-//draws level2
-function level2() {
-  for(c=0; c<brickColumnCount; c++) {
-    bricks[c] = [];
-    for(r=0; r<brickRowCount; r++) {
-      if(c == 4 & r ==5){	
-        bricks[c][r] = { x: 0, y: 0, status: 0 }; //make space for ball
-      }
-      else
-        {bricks[c][r] = { x: 0, y: 0, status: 1 };
-     }
-   }
-
-}
-
-
-    }
-        
-   
+       
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawBricks();
+  screen.drawBricks();
 
   for (let item of balls){
+    if (item.status==1){ //athuga bara ef ball er sýnilegur í leik
         item.draw();
         
         collisionDetection(item);
@@ -234,7 +257,8 @@ function draw() {
         }
 
     	item.x += item.dx;
-        item.y += item.dy;	
+        item.y += item.dy;
+    }	
   }
 
 
@@ -254,5 +278,6 @@ function draw() {
 }
 
 draw();
+
 
 

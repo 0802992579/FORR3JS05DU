@@ -23,7 +23,9 @@ var bricks_to_next_level = brickRowCount * brickColumnCount
 //array to create diffent colored rows
 var color = ["#0095DD","#800080","#FF0000","#FFA500","#FFFF00","#2E8B57"];
 
-// I converted a lot into functions
+// I converted a lot into functions/Objects
+// the original tutorial had no Objects
+
 
 //a text function so all text can be changed in the same place
 function Text (ctx_on) {
@@ -112,7 +114,29 @@ function Screen (level) {
         extra_ball.x = 520;
 	extra_ball.y = 160;
 	extra_ball.status = 1;
-	bricks_to_next_level = (brickRowCount * brickColumnCount) - 1 
+	bricks_to_next_level = (brickRowCount * brickColumnCount) - 1 //how many bricks to next level
+    }
+    //level 3 init
+    if (level == 3){
+        for(c=0; c<brickColumnCount; c++) {
+    	  bricks[c] = [];
+          for(r=0; r<brickRowCount; r++) {
+            if(c == 4 & r ==5){	
+              bricks[c][r] = { x: 0, y: 0, status: 0 }; //make space for ball
+            }
+            else{
+              bricks[c][r] = { x: 0, y: 0, status: 1 };
+            }
+          }
+        }
+        extra_ball.x = 520;
+	extra_ball.y = 160;
+	extra_ball.dx = 4; //faster than normal
+	extra_ball.dy = 4;
+        ball.dx = 4;
+	ball.dy = 4;
+	extra_ball.status = 1;
+	bricks_to_next_level = (brickRowCount * brickColumnCount) - 1 //how many bricks to next level
     }
   };
    
@@ -202,7 +226,7 @@ function collisionDetection(ball_item) {
              score++;			    //add score
              if(score == bricks_to_next_level) {
                 level++;
-                if (level == 3){
+                if (level == 4){ //only 3 levels a the moment
                 	alert("YOU WIN, CONGRATS!");
                 	document.location.reload();
 		}
@@ -217,60 +241,65 @@ function collisionDetection(ball_item) {
   }
 }
 
-       
-
+//       
+//Main game function
+//
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  screen.drawBricks();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);  //clear screen
+  screen.drawBricks();				     //draw bricks
 
-  for (let item of balls){
-    if (item.status==1){ //athuga bara ef ball er sýnilegur í leik
-        item.draw();
+  for (let item of balls){			    //for each ball
+    if (item.status==1){ 	  //athuga bara ef ball er sýnilegur í leik
+        item.draw();	 	  //draw ball
         
-        collisionDetection(item);
+        collisionDetection(item); //check if ball hit a brick
 
+	//if ball hits the left or right end of the screen reverse its direction
         if(item.x + item.dx > canvas.width-item.ballRadius || item.x + item.dx < item.ballRadius) {
             item.dx = -item.dx;
         }
-
+	//if ball hits the top of the screen reverse its direction
         if(item.y + item.dy < item.ballRadius) {
             item.dy = -item.dy;
         }
-        else if(item.y + item.dy > canvas.height-item.ballRadius) {
-            if(item.x > paddle.X && item.x < paddle.X + paddle.Width) {
-                item.dy = -item.dy;
+        else if(item.y + item.dy > canvas.height-item.ballRadius) {        //if almost out of the screen
+            if(item.x > paddle.X && item.x < paddle.X + paddle.Width) {    //if hit by the paddle
+                item.dy = -item.dy;					   //reverse directio
             }
-            else {
-                lives--;
-                if(!lives) {
+            else {							  //else
+                lives--;						  //lose live
+                if(!lives) {						  //if no live left end
                     alert("GAME OVER");
                     document.location.reload();
                 }
-                else {
-                    item.x = canvas.width/2;
-                    item.y = canvas.height-30;
-                    item.dx = 3;
-                    item.dy = -3;
+                else {							 //if live left
+		    ball.restart();					 //restart ball and paddle	
+		    if (item.dx<4){	
+                      item.dx++;					 //increase speed slightly from 2 to 3
+                      item.dy++;
+		    }
                     paddle.X = (canvas.width-paddle.Width)/2;
                 }
             }
         }
-
-    	item.x += item.dx;
+	//move ball
+    	item.x += item.dx; 
         item.y += item.dy;
     }	
   }
 
-
+  //draw paddle
   paddle.draw();
-
+  //if not out of right screen move right
   if(rightPressed && paddle.X < canvas.width-paddle.Width) {
     paddle.X += 7;
   }
+  //if not out of left screen move left
   else if(leftPressed && paddle.X > 0) {
     paddle.X -= 7;
   }
-    
+  
+  //draw Score  
   text.drawScore(ctx);
   text.drawLives(ctx);
 
